@@ -1,0 +1,942 @@
+*{
+	margin:0;
+}
+
+
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+	background-color: #fefefe;
+	margin: 2% auto; /* 15% from the top and centered */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 40%; /* Could be more or less, depending on screen size */
+	position:relative;
+  }
+  
+  /* The Close Button */
+  .close {
+	color: #aaa;
+	font-size: 28px;
+	font-weight: bold;
+	margin:1px;
+	margin-top: -20px;
+	background-color:indianred;
+	height: 20px;
+	width:20px;
+	display:flex;
+	justify-content: center;
+	align-items: center;
+	color:white;
+	width:20px;
+	position:absolute;
+	right:0px;
+	border-radius: 50%;
+	
+  
+  
+  }
+  
+  .close:hover,
+  .close:focus {
+	opacity: 0.7;
+	text-decoration: none;
+	cursor: pointer;
+  }
+
+
+body{
+	background-color:rgba(223, 219, 219,0.2);
+}
+
+.loading{
+	width:300px;
+	margin:auto;
+	font-size: 1.5rem;
+	margin-top: 20%;
+	display:flex;
+	align-items:center;
+}
+.login{
+	border:1px solid whitesmoke;
+	width:400px;
+	margin:auto;
+	margin-top:20px;
+	padding:10px;
+	display:flex;
+	flex-direction:column;
+	align-items: center;
+	justify-content:center;
+	background-color: white;
+
+}
+
+.login__input_zone{
+	display:flex;
+	flex-direction: column;
+	padding:10px;
+}
+.login__input_zone > input{
+	width:300px;
+	height:30px;
+	font-size:1rem;
+	border:none;
+	outline:none;
+	border-bottom: 2px solid indianred;
+	
+}
+
+.login >button{
+	padding:10px;
+	width:150px;
+	border:none;
+	background-color:indianred;
+	color:white;
+	font-size: 1rem;
+	font-weight: bold;
+	cursor:pointer;
+}
+
+.login >button:hover{
+	opacity: 0.6;
+}
+
+.login > h1{
+	color:indianred;
+	border-bottom: 1px solid whitesmoke;
+	margin-bottom: 10px;
+}
+
+.login > .MuiSvgIcon-root{
+	font-size: 3rem;
+	color:black;
+}
+
+.alerte{
+	color:indianred;
+	font-size: 1rem;
+	padding:2px;
+}
+
+.content{
+	background-color:white;
+	min-height:100vh;
+}
+
+.content__page{
+	display:flex;
+	justify-content:space-between;
+}
+
+.topbar{
+	padding:10px;
+	border-bottom: 1px solid whitesmoke;
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+}
+.topbar > button{
+	border:none;
+	cursor:pointer;
+	display:flex;
+	align-items: center;
+	justify-content:center;
+	background-color:indianred;
+	color:white;
+	width:30px;
+	height:30px;
+	border-radius:50%;
+}
+
+.sidebar{
+	
+	flex:1;
+	padding:10px;
+	
+}
+.sidebar > button.active{
+	color:indianred;
+}
+
+.main{
+	flex:5;
+	padding:10px;
+	border-left: 1px solid whitesmoke;
+}
+
+.sidebar> h1{
+	font-size: 1.2rem;
+}
+
+.sidebar > button{
+	display:flex;
+	justify-content:flex-start;
+	align-items: center;
+	width:100%;
+	border:none;
+	background-color:whitesmoke;
+	margin-top: 10px;
+	cursor:pointer;
+	font-size: 1rem;
+	opacity:0.6;
+}
+.sidebar > button:hover{
+	opacity:1;
+}
+
+.sidebar > button > .MuiSvgIcon-root{
+	padding:5px;
+}
+
+.players__search_zone{
+	display:flex;
+	justify-content:flex-end;
+	
+}
+.players__search_zone > div {
+	display:flex;
+	border-bottom: 1px solid whitesmoke;;
+
+}
+.players__search_zone > div > input{
+	width:300px;
+	height:30px;
+	font-size:0.9rem;
+	color:#000;
+	border:none;
+	outline:none;
+}
+
+table {
+	margin-top:10px;
+	border:none;
+	font-size: 0.8rem;
+	text-align: center;
+	width:100%;
+}
+table tbody tr{
+	cursor:pointer;
+}
+table tbody tr:hover{
+	background-color:whitesmoke;
+}
+td{
+	padding:5px;
+}
+thead{
+	background-color:whitesmoke;
+	color:indianred;
+}
+
+.actions{
+	display:flex;
+	justify-content:space-around;
+	align-items:center;
+	
+}
+.actions > button{
+	width:30px;
+	height:30px;
+	border:none;
+	border-radius: 50%;
+	display:flex;
+	justify-content:center;
+	align-items: center;
+	cursor: pointer;
+}
+
+.userimage{
+	width:20px;
+	height:20px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.confirm_body{
+	display:flex;
+	flex-direction: column;
+	align-items:center;
+	justify-content:center;
+}
+
+.confirm_body > h1{
+	font-size: 1.8rem;
+	color:indianred;
+}
+.confirm_body button{
+	padding:10px;
+	margin:10px;
+	border:none;
+	width:100px;
+	cursor:pointer;
+	font-weight: bold;
+}
+
+.confirm_body button:hover{
+	opacity:0.5;
+}
+
+.change_pw_content{
+	display:flex;
+	flex-direction:column;
+	position:relative;
+	width:300px;
+	padding:10px;
+	height:70px;
+}
+
+.change_pw_content button{
+	width:150px;
+	position:absolute;
+	right:0;
+	bottom:0;
+
+}
+.change_pw_content input{
+	border:none;
+	outline:none;
+	flex:4;
+}
+
+.change_pw_content > div{
+	border-bottom: 2px solid whitesmoke;
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+}
+.alerte_zone{
+	color:indianred;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.top_info{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+}
+
+.top_info > div:first-child{
+	display:flex;
+	align-items: center;
+}
+
+.user_profile_top_info > div>  div >img{
+	width:60px;
+	height:60px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin-right:10px;
+}
+
+.top_info_user > div > p:first-child{
+	font-weight: bold;
+	font-size: 1rem;
+}
+
+.top_info_user > div p:last-child{
+	font-size: 0.7rem;
+}
+
+.top_info_coins{
+	display:flex;
+	justify-content:center;
+	align-items: center;
+}
+.top_info_coins > p{
+	font-size: 0.8rem;
+	font-weight: bold;
+	color:green;
+	
+}
+.top_info_coins > button{
+	padding:10px;
+	border:none;
+	background-color:green;
+	color:white;
+	font-weight: bold;
+	margin-left: 10px;
+	cursor: pointer;
+}
+.top_info_coins > button:hover{
+	opacity:.6;
+}
+
+.top_info_user > .MuiSvgIcon-root{
+	font-size:4rem ;	
+}
+
+.bottom_info{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+}
+.bottom_info > div{
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	padding:10px;
+	border-bottom: 1px solid whitesmoke;
+}
+
+.bottom_info > div >p:first-child{
+	font-weight: bold;
+	font-size: 1rem;
+}
+.bottom_info > div > p:last-child{
+	font-size: 0.8rem;
+	color:gray;
+}
+.user_profile_menu{
+	display:flex;
+	justify-content:space-between;
+}
+.user_profile_menu > button{
+	flex:1;
+	padding:5px;
+	margin:5px;
+	border:none;
+	display:flex;
+	justify-content:center;
+	align-items: center;
+	font-size: 0.8rem;
+	color:gray;
+	cursor: pointer;
+}
+.user_profile_menu>button:hover{
+	opacity:0.6;
+}
+.user_profile_menu > button.active{
+	background-color:indianred;
+	color:white;
+}
+
+img{
+	filter:none !important;
+}
+
+.playerinfo_page_status{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+
+}
+.playerinfo_page_status > div{
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	flex:1;
+}
+
+.playerinfo_page_status > div.active{
+	border-bottom:2px solid indianred;
+}
+.playerinfo_page_status > div > p{
+	color:gray;
+	font-size: 0.8rem;
+}
+
+.playerinfo_page_status > div.active > p{
+	font-weight: bold;
+}
+
+.world_ranking_sports{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+	margin-top: 10px;
+}
+.world_ranking_sports > button{
+	padding:5px;
+	flex:1;
+	margin-top: 2px;
+	border:none;
+	margin-right: 5px;
+	cursor: pointer;
+	font-size: 0.8rem;
+	color:gray;
+}
+
+.world_ranking_sports > button:hover{
+	opacity:0.6;
+}
+.world_ranking_sports > button.active{
+	color:indianred;
+	border-bottom: 2px  solid indianred;
+	font-weight: bold;
+}
+
+
+.world_ranking_stats{
+
+}
+.world_ranking_stats_top{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+	padding:10px;
+}
+.world_ranking_stats_top > h1{
+	font-size:1rem;
+}
+.world_ranking_stats_top > p{
+	font-size:0.8rem;
+}
+
+.world_ranking_card{
+	border:1px solid whitesmoke;
+	
+}
+.world_ranking_card_header{
+	background-color:whitesmoke;
+	padding:5px;
+}
+.world_ranking_card_header > p{
+	font-size: 0.8rem;
+	color:gray;
+}
+.world_ranking_card_body > div{
+	display:flex;
+	padding:5px;
+	justify-content:space-between;
+	align-items: center;
+}
+.world_ranking_card_body > div > p:first-child{
+	font-size: 0.8rem;
+	color:gray;
+}
+.world_ranking_card_body > div > p:last-child{
+	font-weight: bold;
+	size:.8rem;
+}
+
+.todaygame{
+	border:1px solid whitesmoke;
+	padding:5px;
+	margin-top: 10px;
+}
+
+.todaygame__top{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+}
+.todaygame__top > div{
+	display:flex;
+	align-items: center;
+}
+.todaygame__top > div > h1{
+	font-size: 1rem;
+	padding:5px
+}
+
+.todaygame__top > div >.MuiSvgIcon-root {
+	color:goldenrod;
+}
+.todaygame__top > div > button{
+	padding:5px;
+	width:70px;
+	border:none;
+	display:flex;
+	align-items: center;
+	justify-content:center;
+	font-weight: bold;
+	background-color:green;
+	color:white;
+	cursor:pointer;
+}
+
+.todaygame__top > div > button:hover{
+	opacity:0.5;
+}
+.todaygame__center{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+	padding:5px;
+}
+.todaygame__center > div{
+	display:flex;
+	flex-direction: column;
+	justify-content:center;
+	align-items: center;
+}
+.todaygame__center > div > h1{
+	font-size: 1rem;
+}
+.todaygame__center > div > p{
+	color:gray;
+	font-size: 0.9rem;
+}
+.todaygame__bottom{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+	padding:5px;
+}
+.todaygame__bottom > div{
+	display:flex;
+	align-items: center;
+}
+.todaygame__bottom > div > button{
+	padding:5px;
+	border:none;
+	display:flex;
+	align-items: center;
+	justify-content:center;
+	width: 80px;
+	margin-left: 5px;
+	cursor: pointer;
+}
+.todaygame__bottom > div > button:hover{
+	opacity:0.5;
+}
+.block_today_game > h1{
+	font-size: 1rem;
+	padding:10px;
+}
+
+.sports_header{
+	display:flex;
+	padding:5px;
+}
+
+.sports_header > select{
+	margin-right: 5px;
+	padding:5px;
+	border:none;
+	width:200px;
+	border-bottom: 1px solid whitesmoke;
+	font-size: 0.8rem;
+}
+
+.sports_header > select:hover{
+	opacity: 0.2;
+	cursor: pointer;
+}
+
+.sports_header > button{
+	width:100px;
+	border:none;
+	cursor: pointer;
+	display:flex;
+	justify-content:center;
+	align-items: center;
+	font-size: 0.8rem;
+	margin-right: 5px;
+}
+
+.sports_header > button:hover{
+	opacity: 0.6;
+}
+
+.table_sports > tbody > tr > td> button{
+	border:none;
+	display:flex;
+	align-items: center;
+	justify-content:center;
+	background-color:white;
+	color:indianred;
+	cursor: pointer;
+	width:30px;
+	height:30px;
+	border-radius: 50%;
+}
+
+.game_detail_date{
+	display:flex;
+	align-items: center;
+	justify-content:space-between;
+	padding:5px;
+}
+.game_detail_date >div > input{
+	padding:2px;
+	flex:0.8;
+	border:none;
+	outline:none;
+	color:gray;
+	font-size: 0.8rem;
+	display:flex;
+	align-items: center;
+	border-bottom:1px solid whitesmoke;
+}
+
+.game_detail_date >div{
+	display:flex;
+	flex:1;
+	align-items: center;
+	
+}
+
+.game_detail_info{
+	padding:10px;
+}
+.game_detail_info> p{
+	font-size: 1rem;
+	color:indianred;
+	font-weight: bold;
+}
+.game_detail_info > div {
+	display:flex;
+	align-items: center;
+	justify-content:space-between;
+}
+
+.game_detail_info > div > div {
+	margin-top: 5px;
+	border-bottom: 1px solid whitesmoke;
+}
+
+.game_detail_info > div > div > p {
+	font-size: 0.8rem;
+	color:gray;
+}
+
+.game_detail_info > div > div > input{
+	border:none;
+	outline:none;
+	color:gray;
+	width:50px;
+}
+
+.game_detail_content > button {
+	position:absolute;
+	right:20px;
+	padding:10px;
+	border:none;
+	cursor: pointer;
+
+}
+.game_detail_content{
+	padding-bottom: 30px;
+}
+
+.game_detail_content > button:hover{
+	opacity: 0.6;
+}
+
+
+.challenges_search_zone{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+	
+}
+.challenges_search_zone > div:last-child {
+	display:flex;
+	border-bottom: 1px solid whitesmoke;;
+
+}
+
+.challenges_search_zone > div:first-child{
+	display:flex;
+	align-items: center;
+}
+.challenges_search_zone > div:first-child >div{
+	border-bottom: 1px solid whitesmoke;
+	margin-right:5px;
+}
+.challenges_search_zone > div:first-child >div > select{
+	margin-right: 5px;
+	color:gray;
+	border:none;
+	outline:none;
+	cursor: pointer;
+}
+
+.challenges_search_zone > div:first-child >div > select:hover{
+	opacity:0.5;
+}
+.challenges_search_zone > div > input{
+	width:250px;
+	height:30px;
+	font-size:0.9rem;
+	color:#000;
+	border:none;
+	outline:none;
+}
+.challenges_body_actions{
+	display:flex;
+	align-items: center;
+}
+.challenges_body_actions > button{
+	margin-top: 10px;
+	padding:10px;
+	width: 70px;
+	border:none;
+	cursor: pointer;
+
+}
+
+.challenges_body_actions > button:hover{
+	opacity:0.5;
+}
+
+.create_challenge_body{
+	display:flex;
+	justify-content:space-between;
+}
+.create_challenge_body > div{
+	flex:0.8;
+	border-bottom: 1px solid whitesmoke;
+	margin-right: 10px;
+}
+
+.create_challenge_body > div > input,.create_challenge_body > div > select{
+	width:95%;
+	color:gray;
+	cursor: pointer;
+	border:none;
+	outline:none;
+
+}
+.create_challenge_body > div > input,.create_challenge_body > div > select:hover{
+	opacity:0.5;
+}
+#modal_create_challenge > div > div  {
+	padding-bottom: 20px;
+}
+#modal_create_challenge > div > div> button{
+	padding:10px;
+	position:absolute;
+	right:10px;
+	margin-bottom: 10px;
+	display:flex;
+	cursor: pointer;
+	border:none;
+}
+
+#modal_create_challenge > div > div> button:hover{
+	opacity:0.5;
+}
+
+.tbody_challenge  > tr > td> button{
+	border:none;
+	display:flex;
+	align-items: center;
+	justify-content:center;
+	background-color:white;
+	color:indianred;
+	cursor: pointer;
+	width:30px;
+	height:30px;
+	border-radius: 50%;
+}
+
+.challenge_name_td{
+	display:flex;
+	justify-content:space-between;
+	align-items: center;
+}
+.challenge_name_td .MuiSvgIcon-root{
+	font-size: 1rem;
+	color:gray;
+}
+.edit_challenge_body{
+	padding-bottom: 40px;
+}
+.edit_challenge_body > div:first-child{
+	display:flex;
+	padding:10px;
+	border-bottom: 1px solid whitesmoke;
+}
+.edit_challenge_body > div > input{
+	width:100%;
+	border:none;
+	outline:none;
+	color:gray;
+}
+
+.edit_challenge_body > button{
+	padding:10px;
+	position:absolute;
+	right:10px;
+	margin-top: 10px;
+	border:none;
+	cursor: pointer;
+}
+
+.edit_challenge_body > button:hover{
+	opacity: 0.5;
+}
+
+.default_values{
+	display:flex;
+	justify-content:flex-end;
+	align-items: center;
+	flex:1;
+	
+}
+
+.default_values > p{
+	font-size:0.8rem;
+	color:gray;
+	font-weight: bold;
+	margin-right: 10px;
+}
+.default_values > div{
+	display:flex;
+	
+
+}
+
+.default_values > div > div{
+	display:flex;
+	flex-direction: column;
+	justify-content:center;
+	margin-right: 5px;
+}
+
+.default_values > div > div > p{
+	font-size: 0.7rem;
+	color:gray;
+}
+.default_values > div > div > input{
+	width:50px;
+}
+
+.default_values button{
+	width:30px;
+	height:30px;
+	border:none;
+	margin-top: 10px;
+	cursor:pointer;
+
+}
+.default_values button:hover{
+	opacity:0.5;
+}
+
+.zone_server_time{
+	margin-top: 5rem;
+}
+.zone_server_time > h2{
+	font-size: 1rem;
+}
+.zone_server_time > button{
+	padding:10px;
+	border:none;
+	cursor: pointer;
+}
+
+.zone_server_time > button:hover{
+	opacity: 0.5;
+}
+
+.zone_server_time > p{
+	font-size: 0.8rem;
+	color:gray;
+	margin-bottom: 1rem;
+}
