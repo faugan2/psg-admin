@@ -41,7 +41,10 @@ const Challenge=()=>{
     },[l]);
 
     useEffect(()=>{
-        setAll_challenges(c);
+        const res=c.filter((item)=>{
+            return item.parent==true;
+        })
+        setAll_challenges(res);
     },[c]);
 
     const sport_changed=(e)=>{
@@ -252,8 +255,12 @@ const Challenge=()=>{
                 return  challenge.name.toLowerCase().indexOf(str)>=0;
             })
         }
-        setAll_challenges(res);
-        console.log(res);
+
+        const res2=res.filter((item)=>{
+            return item.parent==true;
+        })
+       setAll_challenges(res2);
+        
 
     
     }
@@ -370,7 +377,7 @@ const Challenge=()=>{
                     
                    
                  </div>
-                <div>
+                <div style={{backgroundColor:"var(--sub_black)",alignItems:"center"}}>
                     <input type="search" placeholder="Quick search" value={search} onChange={(e)=>{
                         setSearch(e.target.value);
                         //search_challenge();
@@ -379,14 +386,14 @@ const Challenge=()=>{
                         search_challenge();
                     }}
                     />
-                    <SearchIcon />
+                    <SearchIcon style={{fontSize:"1.2rem",color:"white"}} />
                 </div>
             </div>
 
             <div className="challenges_body">
 
                 <div className="challenges_body_actions">
-                    <button onClick={open_create_challenge_form}>Create</button>
+                    <button onClick={open_create_challenge_form} style={{backgroundColor:"var(--sub_black)",color:"white"}}>Create</button>
                     <p className="alerte">{alerte}</p>
                 </div>
             <table  className="table_challenges">
@@ -420,16 +427,20 @@ const Challenge=()=>{
                                     <tr key={challenge.key}>
                                         <td>{types[challenge.type]}</td>
                                         <td className="challenge_name_td">
-                                            {challenge.name}
+                                           <p>{challenge.name}</p> 
                                             <button onClick={(e)=>{
                                                 edit_challenge(e,challenge.key,challenge.name);
-                                            }}>
+                                            }} style={{
+                                                width:"40px",height:"40px",marginRight:"0.5rem"}}>
                                                 <EditIcon />
                                             </button>
 											
 											<button onClick={(e)=>{
                                                 set_challenge_image(e,challenge.key,challenge.name);
-                                            }}>
+                                            }}
+                                            style={{
+                                                width:"40px",height:"40px",marginRight:"0.5rem"}}
+                                            >
                                                 
                                                 
                                                 {challenge.url == "" && "Img"}

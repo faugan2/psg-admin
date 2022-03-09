@@ -11,11 +11,17 @@ import {data} from "./data";
 import firebase from "firebase";
 import SyncAltIcon from '@material-ui/icons/SyncAlt';
 import { calculate_pick_win, get_winners } from './functions';
+import Modal from "./components/Modal";
+import CreateGame from "./components/CreateGame";
+import VisibilityIcon from '@material-ui/icons/Visibility';
+
 //const API_KEY="008f86d3083f1d90c3a06ec1fe38032a"; foganbidi2@gmail.com
 //const API_KEY="23c219dd52bfbe431d8f7320d8e53c00"; // sicitg2021@gmail.com
 const API_KEY="d828cb8f0e4c810d597dbe0380a73c2b"; // real
 const API_URL="https://api.the-odds-api.com/v4/sports/";
 const moment=require("moment-timezone");
+
+
 
 const Sports=()=>{
     const [sports,setAllSport]=useState([]); 
@@ -354,13 +360,11 @@ const Sports=()=>{
         dispatch(setSelectedGame(game[0]));
        
     }
-    const delete_sport=async (e)=>{
-        e.stopPropagation();
-        var btn=e.target;
-        console.log(btn);
-        var key=btn.dataset.id_game;
+    const delete_sport=async (key)=>{
+       
+       
         setAlerte("Please wait...");
-       await db.collection("psg_games").doc(key).delete();
+        await db.collection("psg_games").doc(key).delete();
 
        const new_games=games.filter((game)=>{
            return game.key!=key;
@@ -630,6 +634,12 @@ const Sports=()=>{
 		
 	},[])
 
+    const open_add_game=()=>{
+       
+        set_open_create(true)
+    }
+
+    const [open_create,set_open_create]=useState(false);
     
     return(
         <div className="sports">
@@ -656,7 +666,10 @@ const Sports=()=>{
                 </select>
                 <button onClick={load_games}>View</button>
                 <button onClick={load_new_games}>Load Games</button>
-				<button>{time_diff} {tz}</button>
+                <button 
+                style={{backgroundColor:"indianred",color:"white"}}
+                onClick={open_add_game}>Add a Game</button>
+				{/*<button>{time_diff} {tz}</button>*/}
                 
                 {
                     showLeagues.length>0 && id_league !="" ? <div className="default_values">
@@ -695,7 +708,7 @@ const Sports=()=>{
             <div className="players__search_zone">
                 <div>
                     <input type="search" placeholder="Search sports" value={search} onChange={(e)=>setSearch(e.target.value)} />
-                    <SearchIcon />
+                    <SearchIcon style={{color:"white",fontSize:"1.2rem"}}/>
                 </div>
             </div>
                 <table  className="table_sports">
@@ -713,16 +726,24 @@ const Sports=()=>{
                             games.map((game)=>{
                                 
 
-                               let local_date=moment.tz(game.commence,tz).format();
+                               let moment_date=moment.tz(game.commence,tz);
+                               let local_date=moment_date.format("ll");
+                               let local_time=moment_date.format("LT");
+
                                console.log(game.commence,local_date);
                                 return(
-                                    <tr key={game.key} onClick={(e)=>{
-                                        sport_click(e,game.key)
-                                    }}>
-                                        <td>{local_date}</td>
+                                    <tr key={game.key} >
+                                        <td>{local_date} {local_time}</td>
                                         <td>{game.away}</td>
                                         <td>{game.home}</td>
                                         <td style={{display:"flex",alignItems:"center",gap:"1rem"}}>
+                                           
+                                           <button onClick={(e)=>{
+                                        sport_click(e,game.key)
+                                    }}>
+                                               <VisibilityIcon />
+                                           </button>
+
                                             <button onClick={e=>{
                                                     switch_game(e,game.key)
                                             }}>
@@ -843,6 +864,7 @@ const Sports=()=>{
             </div>
 
 
+            {open_create==true && <Modal open_modal={true} content={<CreateGame />} />}
 
         </div>
     );

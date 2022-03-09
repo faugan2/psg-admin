@@ -1,3 +1,6 @@
+:root{
+	--sub_black:#474f4f;
+}
 *{
 	margin:0;
 }
@@ -58,7 +61,7 @@
 
 
 body{
-	background-color:rgba(223, 219, 219,0.2);
+	background-color:black;
 }
 
 .loading{
@@ -68,6 +71,8 @@ body{
 	margin-top: 20%;
 	display:flex;
 	align-items:center;
+	justify-content:center;
+	color:white;
 }
 .login{
 	border:1px solid whitesmoke;
@@ -138,14 +143,22 @@ body{
 .content__page{
 	display:flex;
 	justify-content:space-between;
+	background-color:black;
+	min-height: calc(100vh - 60px);
 }
 
 .topbar{
-	padding:10px;
-	border-bottom: 1px solid whitesmoke;
+	height:60px;
 	display:flex;
 	justify-content:space-between;
 	align-items: center;
+	background-color:var(--sub_black);
+	color:white;
+}
+
+.topbar >h1{
+	font-size: 1rem;
+	margin-left: 1rem;
 }
 .topbar > button{
 	border:none;
@@ -158,22 +171,26 @@ body{
 	width:30px;
 	height:30px;
 	border-radius:50%;
+	margin-right: 1rem;
 }
 
 .sidebar{
-	
 	flex:1;
 	padding:10px;
+	color:white;
 	
 }
+
+
 .sidebar > button.active{
 	color:indianred;
+	font-weight: bold;
 }
 
 .main{
 	flex:5;
 	padding:10px;
-	border-left: 1px solid whitesmoke;
+	border-left: 1px solid var(--sub_black);
 }
 
 .sidebar> h1{
@@ -186,11 +203,13 @@ body{
 	align-items: center;
 	width:100%;
 	border:none;
-	background-color:whitesmoke;
+	border-radius: 5px;
+	background-color:var(--sub_black);
 	margin-top: 10px;
 	cursor:pointer;
 	font-size: 1rem;
-	opacity:0.6;
+	color:white;
+	font-size: 0.9rem;
 }
 .sidebar > button:hover{
 	opacity:1;
@@ -204,19 +223,22 @@ body{
 	display:flex;
 	justify-content:flex-end;
 	
+	
 }
 .players__search_zone > div {
 	display:flex;
-	border-bottom: 1px solid whitesmoke;;
+	background-color:var(--sub_black);
+	align-items: center;
 
 }
 .players__search_zone > div > input{
 	width:300px;
 	height:30px;
 	font-size:0.9rem;
-	color:#000;
+	color:white;
 	border:none;
 	outline:none;
+	background-color:var(--sub_black);
 }
 
 table {
@@ -225,20 +247,23 @@ table {
 	font-size: 0.8rem;
 	text-align: center;
 	width:100%;
+	color:white;
 }
 table tbody tr{
 	cursor:pointer;
 }
 table tbody tr:hover{
-	background-color:whitesmoke;
+	background-color:rgba(255,255,255,0.1);
 }
 td{
 	padding:5px;
 }
 thead{
-	background-color:whitesmoke;
-	color:indianred;
+	background-color:var(--sub_black);
+	color:white;
 }
+
+
 
 .actions{
 	display:flex;
@@ -610,7 +635,10 @@ img{
 
 .sports_header{
 	display:flex;
+	justify-content:space-between;
 	padding:5px;
+	margin-top: 0.5rem;
+	margin-bottom: 1rem;
 }
 
 .sports_header > select{
@@ -636,12 +664,19 @@ img{
 	align-items: center;
 	font-size: 0.8rem;
 	margin-right: 5px;
+	background-color:var(--sub_black);
+	color:white;
 }
 
 .sports_header > button:hover{
 	opacity: 0.6;
 }
-
+.sports_body{
+	min-height:calc(100vh - 180px);
+	max-height:calc(100vh - 180px);
+	overflow:auto;
+	
+}
 .table_sports > tbody > tr > td> button{
 	border:none;
 	display:flex;
@@ -727,7 +762,9 @@ img{
 	opacity: 0.6;
 }
 
-
+.challenges{
+	color:white;
+}
 .challenges_search_zone{
 	display:flex;
 	justify-content:space-between;
@@ -736,7 +773,7 @@ img{
 }
 .challenges_search_zone > div:last-child {
 	display:flex;
-	border-bottom: 1px solid whitesmoke;;
+	border-bottom: 1px solid var(--sub_black);;
 
 }
 
@@ -745,7 +782,7 @@ img{
 	align-items: center;
 }
 .challenges_search_zone > div:first-child >div{
-	border-bottom: 1px solid whitesmoke;
+	
 	margin-right:5px;
 }
 .challenges_search_zone > div:first-child >div > select{
@@ -754,6 +791,7 @@ img{
 	border:none;
 	outline:none;
 	cursor: pointer;
+	background-color:var(--sub_black);
 }
 
 .challenges_search_zone > div:first-child >div > select:hover{
@@ -763,9 +801,10 @@ img{
 	width:250px;
 	height:30px;
 	font-size:0.9rem;
-	color:#000;
+	color:white;
 	border:none;
 	outline:none;
+	background-color:var(--sub_black);
 }
 .challenges_body_actions{
 	display:flex;
@@ -837,8 +876,11 @@ img{
 
 .challenge_name_td{
 	display:flex;
-	justify-content:space-between;
 	align-items: center;
+}
+.challenge_name_td >p{
+	flex:1;
+	text-align: left;
 }
 .challenge_name_td .MuiSvgIcon-root{
 	font-size: 1rem;
@@ -921,6 +963,7 @@ img{
 
 .zone_server_time{
 	margin-top: 5rem;
+	display:none;
 }
 .zone_server_time > h2{
 	font-size: 1rem;

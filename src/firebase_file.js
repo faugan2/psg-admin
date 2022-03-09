@@ -1,13 +1,8 @@
 import firebase from "firebase";
-/*
-const firebaseConfig = {
-  apiKey: "AIzaSyBbZbzP407pWBHaaAEr48jJkrZm_8F2vfQ",
-  authDomain: "prosportguru-a0569.firebaseapp.com",
-  projectId: "prosportguru-a0569",
-  storageBucket: "prosportguru-a0569.appspot.com",
-  messagingSenderId: "46274020109",
-  appId: "1:46274020109:web:77138d23dbfecebac1a644"
-};*/
+
+//admin@gmail.com
+//admin@2021
+
 const firebaseConfig = {
   apiKey: "AIzaSyC20eE_3FGGhzVCL-Hnx2ye0fskZ-UElrs",
   authDomain: "prosport-guru-inc.firebaseapp.com",

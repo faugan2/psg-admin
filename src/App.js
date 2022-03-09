@@ -100,7 +100,7 @@ function App() {
     <div>
       {
         app==0 ? <div className="loading">
-          <HourglassEmptyIcon />
+          <HourglassEmptyIcon style={{color:"white"}} />
           Loading...</div> : 
         app==1 ? <Login /> : <Content />
       }

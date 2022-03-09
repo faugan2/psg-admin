@@ -215,7 +215,7 @@ const Players=()=>{
             <div className="players__search_zone">
                 <div>
                     <input type="search" placeholder="Search player" value={search} onChange={e=>setSearch(e.target.value)}/>
-                    <SearchIcon />
+                    <SearchIcon style={{color:"white",fontSize:"1.2rem"}}/>
                 </div>
             </div>
             <table border="1">
@@ -261,13 +261,13 @@ const Players=()=>{
                         <td>0-0</td>
                         <td className="actions">
                             <button title="User profile" onClick={user_profile.bind(this,user)}>
-                                <PersonIcon />
+                                <PersonIcon style={{fontSize:"1.2rem"}} />
                             </button>
                             <button title="Reset password" onClick={reset_user_password.bind(this,user)}>
-                                <CachedIcon />
+                                <CachedIcon  style={{fontSize:"1.2rem"}}/>
                             </button>
                             <button title="Delete user" onClick={delete_user.bind(this,user)}>
-                                <DeleteIcon />
+                                <DeleteIcon style={{fontSize:"1.2rem"}} />
                             </button>
                         </td>
                         

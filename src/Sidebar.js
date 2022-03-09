@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import {db} from "./firebase_file";
 import firebase from "firebase";
 
+import Spring from "./components/Spring";
+
 const Sidebar=()=>{
     const dispatch=useDispatch();
     const [date,setDate]=useState("");
@@ -54,7 +56,7 @@ const Sidebar=()=>{
 
     return(
         <div className="sidebar">
-            <h1>Actions</h1>
+            
             <button onClick={go_to_content.bind(this,0)}>
                 <GroupIcon />
                 Players
@@ -75,6 +77,8 @@ const Sidebar=()=>{
                 <p>{date}</p>
                 <button className="btn_server_time" onClick={set_today_date}>Update time</button>
             </div>
+
+            <Spring />
             
 
             {/*<button onClick={go_to_content.bind(this,3)}>

@@ -1,0 +1,39 @@
+
+.create_game{
+    background-color: var(--sub_black);
+
+    >.create_game_sport{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+
+        >.line{
+            margin:0.5rem;
+            display:flex;
+            flex-direction:column;
+            flex:1;
+
+            >label{
+                font-size:0.8rem;
+                color:gray;
+            }
+        }
+    }
+}
+
+.game_detail_info{
+    >div{
+        display:flex ;
+        align-items:center !important;
+
+       
+    }
+}
+
+input{
+    padding:0.3rem !important;
+}
+
+select{
+    padding:0.3rem;
+}
