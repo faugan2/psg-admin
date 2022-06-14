@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectLeagues, selectSelectedGame, selectSelectedGames, 
     selectChallenges,
+    selectUsers,
     selectSports, setSelectedGame, setSelectedGames } from './features/counterSlice';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DateRangeIcon from '@material-ui/icons/DateRange';
@@ -63,11 +64,20 @@ const Sports=()=>{
     const sg=useSelector(selectSelectedGame);
     const sgs=useSelector(selectSelectedGames)
     const c=useSelector(selectChallenges);
+    const u=useSelector(selectUsers);
     
     const [alerte,setAlerte]=useState("");
     const [challenges,set_challenges]=useState(null)
+    const [users,set_users]=useState(null);
+
+
 
     const dispatch=useDispatch();
+
+    useEffect(()=>{
+        if(u==null) return;
+        set_users(u);
+    },[u])
 
     useEffect(()=>{
         if(c==null) return;
@@ -430,6 +440,29 @@ const Sports=()=>{
         if(alluserspicks.length==1){
             //cancel this challenge
             //challenge.cancelled=true;
+            await db.collection("psg_challenges").doc(id_challenge).delete();
+            
+            
+            //remove all picks from this challenge
+            const snap=await db.collection("psg_picks")
+            .where("id_challenge","==",id_challenge)
+            .get();
+            snap.docs.map(async (doc)=>{
+                
+                await db.collection("psg_picks").doc(doc.id).delete();
+                console.log("the data picks removed")
+            })
+
+            //give coins back to user 
+            const snap2=await db.collection("psg_users_coins")
+            .where("id_challenge","==",id_challenge)
+            .get();
+            snap2.docs.map(async (doc)=>{
+                
+                await db.collection("psg_users_coins").doc(doc.id).delete();
+                console.log("the data coins back to user")
+            })
+
             return;
         }
         
@@ -453,7 +486,9 @@ const Sports=()=>{
             })
 
             stats.push({id_pick,user,user_results});
-            //console.log("the data",user,user_results);  
+            console.log("the data",user,user_results,id_pick); 
+            await db.collection("psg_picks").doc(id_pick)
+            .update({results:user_results},{merge:true}) 
         })
         //console.log("the data whole stats is ",stats);
         const final_res=get_winners(mode,stats);
@@ -464,6 +499,134 @@ const Sports=()=>{
         .doc(id_challenge)
         .update({...final_res,closed:true},{merge:true})
         console.log("the data, updated")
+
+       // console.log("the data users=",users);
+
+        users.map(async (user,i)=>{
+            const email=user.email;
+            
+            const snap=await db.collection("psg_picks")
+            .where("user","==",email).get();
+            
+            const all_picks=[];
+            snap.docs.map((doc)=>{
+                const id=doc.id;
+                const data=doc.data();
+                data.key=id;
+                if(data.results!=undefined){
+                    if(data.results?.length>0){
+                        all_picks.push(data)
+                    }
+                }
+            })
+            //if(all_picks.length==0) return;
+
+            
+
+            const res_ml_spread=[];
+            const res_over_under=[];
+            let wins=0;
+            let loses=0; 
+            let streak=0;
+            let over_all=".000";
+            let last_10="0-0";
+            let last_200="0-0";
+            let wins_ou=0;
+            let loses_ou=0;
+            
+            let stats={
+                wins,
+                loses,
+                streak,
+                over_all,
+                last_10,
+                last_200,
+                wins_ou,
+                loses_ou
+            }
+
+            all_picks.map((item,i)=>{
+            const picks=item.picks;
+            const results=item.results;
+            for(var j=0; j<picks.length; j++){
+                const type=picks[j].type;
+                const result=results[j];
+
+                if(type==1 || type==2){
+                res_ml_spread.push(result);
+                }else{
+                res_over_under.push(result)
+                }
+            }
+            })
+
+            //console.log("the data",email,res_ml_spread,res_over_under)
+
+            
+            wins=res_ml_spread?.filter((item)=>item==1).length
+            loses=res_ml_spread?.filter((item)=>item==2).length
+        
+            let res=[...res_ml_spread];
+            res.reverse();
+            const l_10=res.slice(0,10);
+            const w_l_10=l_10.filter((item,i)=>item==1).length;
+            const l_l_10=l_10.filter((item,i)=>item==2).length;
+            last_10=`${w_l_10}-${l_l_10}`;
+        
+            const l_200=res.slice(0,200);
+            const w_l_200=l_200.filter((item,i)=>item==1).length;
+            const l_l_200=l_200.filter((item,i)=>item==2).length;
+            last_200=`${w_l_200}-${l_l_200}`;
+        
+            let sp=0;
+            for(var i=0; i<res_ml_spread?.length; i++){
+              const r=res_ml_spread[i];
+              if(r==1){
+                sp++;
+              }else if(r==2){
+                sp=0;
+              }
+            }
+            streak=sp;
+
+            let w=parseInt(wins);
+            let l=parseInt(loses);
+            const total=w+l;
+            let per=w/total;
+            if(isNaN(per)){
+                per=0;
+            }
+            if(per!=1){
+              per=per.toFixed(3);
+              per=per.replace("0.",".");
+            }
+            over_all=per;
+
+          
+
+            wins_ou=res_over_under?.filter((item,i)=>item==1).length
+            loses_ou=res_over_under?.filter((item,i)=>item==2).length
+
+            
+
+
+             stats={
+                wins,
+                loses,
+                over_all,
+                streak,
+                last_10,
+                last_200,
+                wins_ou,
+                loses_ou
+            }
+            await db.collection("psg_users_stats").doc(email).set(stats)
+            console.log("the data",stats)
+
+            
+
+        })
+
         
     }
 
