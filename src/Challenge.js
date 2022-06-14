@@ -363,9 +363,9 @@ const Challenge=()=>{
                     }}>
                         <option value="">Chose an entry</option>
                         <option value="0">Free</option>
-                        <option value="1000">1000 coins</option>
-                        <option value="2000">2000 coins</option>
-                        <option  value="5000">3000 coins</option>
+                        <option value="1">1 coins</option>
+                        <option value="2">2 coins</option>
+                        <option  value="5">3 coins</option>
                     </select>
                     </div>
 
@@ -405,6 +405,7 @@ const Challenge=()=>{
                             <th>League</th>
                             <th>Entry</th>
                             <th>Mode</th>
+                            <th>#Games</th>
                             <th width="5%">Actions</th>
                         </tr>
 
@@ -422,6 +423,10 @@ const Challenge=()=>{
                                 var entry=challenge.entry;
                                 if(entry=="0"){
                                     entry="Free";
+                                }else{
+                                    if(parseInt(entry)>=1000){
+                                        entry=parseInt(entry)/1000;
+                                    }
                                 }
                                 return(
                                     <tr key={challenge.key}>
@@ -460,6 +465,7 @@ const Challenge=()=>{
                                         <td>{league_name}</td>
                                         <td>{entry}</td>
                                         <td>{modes[challenge.mode]}</td>
+                                        <td>{challenge.number_game}</td>
                                         <td>
                                             <button onClick={(e)=>{
                                                 delete_challenge(e,challenge.key);
@@ -484,9 +490,9 @@ const Challenge=()=>{
                            }} id="number_game">
                                <option value="">Nomber of game</option>
                                <option value="3">3</option>
-                               <option value="3">5</option>
-                               <option value="3">7</option>
-                               <option value="3">9</option>
+                               <option value="5">5</option>
+                               <option value="7">7</option>
+                               <option value="9">9</option>
                            </select>
                        </div>
 

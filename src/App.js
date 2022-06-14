@@ -6,6 +6,7 @@ import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import {db,auth} from "./firebase_file";
 import Login from "./Login";
 import Content from "./Content";
+import Debug from "./Debug";
 import { selectSports, setLeagues, setSports, setUsers,setCoins } from './features/counterSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -57,7 +58,7 @@ function App() {
 	await users.map(async (user,index)=>{
 		const email=user.email;
 		const res_coin=await db.collection("psg_users_coins").where("user","==",email).get();
-		let total_coins=5000;
+		let total_coins=50;
 		await res_coin.forEach((line)=>{
 			const id=line.id;
 			const coin=parseInt(line.data().entry);
@@ -67,7 +68,7 @@ function App() {
 		const obj={user:email,coins:total_coins};
 		coins.push(obj);
 		if(index==users.length-1){
-			dispatch(setCoins(coins));
+			//dispatch(setCoins(coins));
 		}
 		
 		
@@ -81,6 +82,19 @@ function App() {
   }
 
   //load_sports();
+
+  useEffect(()=>{
+    db.collection("psg_users_coins").onSnapshot((snap)=>{
+      const data=[];
+      snap.docs.map((doc)=>{
+        const id=doc.id;
+        const d=doc.data();
+        d.key=id;
+        data.push(d);
+      })
+      dispatch(setCoins(data))
+    })
+  },[])
   useEffect(()=>{
     auth.onAuthStateChanged((user)=>{
       if(user==null){
@@ -102,7 +116,7 @@ function App() {
         app==0 ? <div className="loading">
           <HourglassEmptyIcon style={{color:"white"}} />
           Loading...</div> : 
-        app==1 ? <Login /> : <Content />
+        app==1 ? <Login /> : <><Content /></>
       }
     </div>
   );

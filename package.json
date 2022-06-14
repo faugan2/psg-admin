@@ -17,7 +17,8 @@
     "react-redux": "^7.2.3",
     "react-scripts": "4.0.3",
     "react-spring": "^9.4.3",
-    "sass": "^1.49.8"
+    "sass": "^1.49.8",
+    "string-to-color": "^2.2.2"
   },
   "scripts": {
     "start": "react-scripts start",

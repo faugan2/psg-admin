@@ -72,13 +72,15 @@ const Sidebar=()=>{
                 Challenges
             </button>
 
+            
+
             <div className="zone_server_time">
                 <h2>Server time</h2>
                 <p>{date}</p>
                 <button className="btn_server_time" onClick={set_today_date}>Update time</button>
             </div>
 
-            <Spring />
+            {/*<Spring />*/}
             
 
             {/*<button onClick={go_to_content.bind(this,3)}>

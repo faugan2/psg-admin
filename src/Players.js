@@ -10,6 +10,9 @@ import PlayerInfo from "./PlayerInfo";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, selectUsers, setUser,selectCoins } from './features/counterSlice';
 
+
+const stc = require('string-to-color');
+
 const Players=()=>{
     const [players,setPlayers]=useState([]);
 	const [coins,set_coins]=useState([]);
@@ -66,6 +69,7 @@ const Players=()=>{
        for(var i=0; i<td_coins.length; i++){
            var td=td_coins[i];
            const user_email=td.dataset.user;
+           console.log("tour de ",user_email);
            const res=c.filter((item)=>{
                return item.user==user_email;
            })
@@ -245,15 +249,25 @@ const Players=()=>{
                                 <tr key={user.id}>
                         <td>{user.new_date}</td>
                         <td>
-                            {
-                                user.photo!="foo.jpg" ? <img src={user.photo} className="userimage"/>:
-                                <AccountCircleIcon />
-                            }
+                           <div style={{
+                               backgroundColor:stc(user.username),
+                               width:"100%",
+                               height:"40px",
+                               borderRadius:"10px",
+                               display:"flex",
+                               alignItems:"center",
+                               justifyContent:"center",
+                               fontWeight:"bold",
+                           }}>
+                               {(user.username[0]+user.username[1]).toUpperCase()}
+                           </div>
                             
                         </td>
-                        <td>{user.username}</td>
+                        <td>@{user.username}</td>
                         <td>{user.email}</td>
-                        <td className="coins" data-user={user.email}>{user.coins}</td>
+                        <td className="coins" data-user={user.email} style={{
+                            color:"gold"
+                        }}>{user.coins}</td>
                         <td>{user.wins}</td>
                         <td>{user.loses}</td>
                         <td>0-0</td>

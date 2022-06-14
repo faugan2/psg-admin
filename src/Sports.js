@@ -1,7 +1,9 @@
 import SearchIcon from '@material-ui/icons/Search';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectLeagues, selectSelectedGame, selectSelectedGames, selectSports, setSelectedGame, setSelectedGames } from './features/counterSlice';
+import { selectLeagues, selectSelectedGame, selectSelectedGames, 
+    selectChallenges,
+    selectSports, setSelectedGame, setSelectedGames } from './features/counterSlice';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
@@ -60,10 +62,17 @@ const Sports=()=>{
     const l=useSelector(selectLeagues);
     const sg=useSelector(selectSelectedGame);
     const sgs=useSelector(selectSelectedGames)
+    const c=useSelector(selectChallenges);
     
     const [alerte,setAlerte]=useState("");
+    const [challenges,set_challenges]=useState(null)
 
     const dispatch=useDispatch();
+
+    useEffect(()=>{
+        if(c==null) return;
+        set_challenges(c);
+    },[c])
 
     const handle_close_modal=()=>{
         //alert("ok closing");
@@ -74,6 +83,11 @@ const Sports=()=>{
          // dispatch(setUser(null));
 
       }
+
+      useEffect(()=>{
+        if(sg==null) return;
+        setSelected_game(sg);
+      },[sg])
       useEffect(()=>{
           var modals=document.querySelectorAll(".close");
           for(var i=0; i<modals.length; i++){
@@ -117,11 +131,14 @@ const Sports=()=>{
     useEffect(()=>{
         const tmp_sg=sg;
         console.log(tmp_sg);
+        console.log("the game is ",sg);
         /*var  date=new Date(tmp_sg?.date.seconds*1000).toUTCString();
         date=date.split(" ");
         tmp_sg.new_date2="faugan";
         console.log(date);*/
-        if(sg!==null){
+        if(sg==null) return;
+
+       
             setStart_date(sg.start_date);
             setStart_time(sg.start_time);
             setTotal(sg.total);
@@ -142,10 +159,7 @@ const Sports=()=>{
                 hs=""
             }
             setV_score(as);
-            setH_score(hs);
-
-
-        }
+            setH_score(hs)
 
         setSelected_game(tmp_sg)
     },[sg]);
@@ -224,7 +238,7 @@ const Sports=()=>{
             setAll_games(all_games);
             dispatch(setSelectedGames(all_games));
             setAlerte("");
-            console.log("getting challenges")
+           /* console.log("getting challenges")
             const snap2=await db.collection("psg_challenges")
             .where("league","==",id_league)
             .get();
@@ -236,9 +250,9 @@ const Sports=()=>{
                 const entry=doc.data().entry;
                 const mode_challenge=doc.data().mode;
                 challenges.push({id_challenge,mode_challenge,entry});
-            })
+            })*/
 
-            challenges.forEach(async (challenge)=>{
+           /* challenges.forEach(async (challenge)=>{
                 const key=challenge.id_challenge;
                 const mode=challenge.mode_challenge;
                 const entry=challenge.entry;
@@ -270,7 +284,9 @@ const Sports=()=>{
                             home_score=rs[0]?.home_score;
                             away_score=rs[0]?.away_score;
                         }
-                        const obj={id_game,pickdata,team_picked,type_pick,home_score,away_score,mode}
+                       // const obj={id_game,pickdata,team_picked,type_pick,home_score,away_score,mode}
+                       const obj=pick;
+                       console.log("the object is ",obj);
                        const {result,info}=  calculate_pick_win(obj);
                       // console.log("this is",result,type_pick);
                        all_res.push(result);
@@ -336,13 +352,228 @@ const Sports=()=>{
                 
 
                 
-            })
+            })*/
 
             
             
        });
        
     }
+
+    const update_stats=async ()=>{
+
+        // GET ALL GAMES WITH UNKNOWN SCORES
+        const snap=await db.collection("psg_games")
+        .where("away_score","==","")
+        .where("home_score","==","")
+        .get();
+        const unfinished_games=snap.docs.map((doc)=>{
+            return doc.id;
+        })
+       // console.log("the data unfished games are",unfinished_games)
+
+
+        //GET ALL PLAYED CHALLENGE 
+        const snap2=await db.collection("psg_challenges")
+        .where("parent","==",false)
+        .get();
+        const challenges=snap2.docs.map((doc)=>{
+            return doc.id;
+        })
+        console.log("the data all played challenged",challenges);
+
+        // get picks for each challenges
+
+        challenges.map(async (item,i)=>{
+            const req=await db.collection("psg_picks").where("id_challenge","==",item).get()
+            const picks=req.docs.map((doc)=>{
+                const id_pick=doc.id;
+                const pick=doc.data();
+                pick.id_pick=id_pick;
+                return {...pick}
+            });
+            //console.log("the data picks",picks)
+            //get games for each picks of this challenge
+            
+            const games=[];
+            picks.map((item2,i2)=>{
+               const tmp_games= item2.picks.map((item3,i3)=>{  
+                    games.push(item3.key);
+                })
+            })
+
+            let diff=games.filter((x)=>{
+                return unfinished_games.includes(x);
+            })
+
+            if(diff.length==0){
+                // we can calculate stat for the challenge
+                //picks,id_challenge;
+               // calculate_stats(item,picks);
+               calculate_stats(item,picks);
+            }
+
+            
+
+            
+            
+           
+        })
+
+        
+    }
+
+    const calculate_stats=async (id_challenge,alluserspicks)=>{
+        const res=await db.collection("psg_challenges").doc(id_challenge).get();
+        const {type,mode,entry} = res.data();
+        
+        if(alluserspicks.length==1){
+            //cancel this challenge
+            //challenge.cancelled=true;
+            return;
+        }
+        
+        const stats=[];
+        alluserspicks.map(async (item,i)=>{
+            const {id_pick,picks,user}=item;
+
+            const user_results=[];
+             picks.map(async (pick,j)=>{
+                const team_picked=pick.team;
+                const type_pick=pick.type;
+                const game_id=pick.key;
+                const game=pick.game;
+
+                //check if user win, lose, tie on this pick 
+                // return 1 for win, 2 for lose, 3 for tie, 0 if no score found
+                const res= check_pick_result(game_id,type_pick,team_picked,game);
+                user_results.push(res);
+                
+                 
+            })
+
+            stats.push({id_pick,user,user_results});
+            //console.log("the data",user,user_results);  
+        })
+        //console.log("the data whole stats is ",stats);
+        const final_res=get_winners(mode,stats);
+        
+
+        //update the challenge and close it 
+        await db.collection("psg_challenges")
+        .doc(id_challenge)
+        .update({...final_res,closed:true},{merge:true})
+        console.log("the data, updated")
+        
+    }
+
+    const get_winners=(mode,stats)=>{
+        
+        if(mode==1){
+            //most wins; 
+            let max_winnings=0; 
+            const results=[];
+            stats.map((item,i)=>{
+                const {id_pick,user,user_results}=item;
+                const wins=user_results.filter((item2,i2)=>{
+                    return item2==1;
+                }).length;
+
+                if(wins>max_winnings){
+                    max_winnings=wins;
+                }
+
+                const loses=user_results.filter((item2,i2)=>{
+                    return item2==2;
+                }).length;
+
+                const ties=user_results.filter((item2,i2)=>{
+                    return item2==3;
+                }).length;
+                results.push({id_pick,user,user_results,wins,loses,ties})
+                
+            })
+            
+            const winners=results.filter((item,i)=>{
+                return item.wins==max_winnings;
+            })
+            
+            return {results,max_winnings,winners};
+           
+        }
+        if(mode==2){
+            //longest winning streak 
+            return [];
+        }
+    }
+
+    const check_pick_result= (game_id,type_pick,team_picked,game)=>{
+        const res=sgs.filter((item,i)=>{
+            return item.key==game_id;
+        })
+       if(res.length==0) return 0;
+
+       const {away_score,home_score}=res[0];
+       
+       if(type_pick==1){
+        //moneyline 
+        return  money_line_result(away_score,home_score,team_picked,game);
+       }
+
+       if(type_pick==2){
+        return  spread_result(away_score,home_score,team_picked,game);
+       }
+
+       if(type_pick==3){
+        return  total_result(away_score,home_score,team_picked,game);
+       }
+
+    }
+
+    const money_line_result= (away_score,home_score,team_picked,game)=>{
+        const as=parseFloat(away_score);
+        const hs=parseFloat(home_score);
+
+        if(team_picked==1){
+            // picked away team 
+            if(as>hs) return 1;
+            if(as<hs) return 2; 
+            if(as==hs) return 3;
+        }
+
+        if(team_picked==2){
+            //picked home team;
+            if(hs>as) return 1;
+            if(hs<as) return 2; 
+            if(hs==as) return 3;
+        }
+    }
+
+    const spread_result= (away_score,home_score,team_picked,game)=>{
+        console.log("the data spread")
+    }
+
+    const total_result= (away_score,home_score,team_picked,game)=>{
+        const total=parseFloat(game.total);
+        const s=parseFloat(away_score) + parseFloat(home_score);
+
+        
+        if(team_picked==1){
+            //picked over 
+            if(s>total) return 1;
+            if(s<total) return 2;
+            if(s==total) return 3;
+        }
+
+        if(team_picked==2){
+            //picked under
+            if(s<total) return 1;
+            if(s>total) return 2;
+            if(s==total) return 3;
+        }
+    }
+
+
     const league_changed=(e)=>{
         const idl=e.target.value;
         setId_league(idl);
@@ -350,6 +581,7 @@ const Sports=()=>{
 
     const sport_click=(e,key)=>{
        // alert(e);
+       console.log("here we go")
         e.stopPropagation();
         const modal=document.querySelector("#modal_sport_details");
         modal.style.display="block";
@@ -358,6 +590,7 @@ const Sports=()=>{
             return line.key===key;
         });
         dispatch(setSelectedGame(game[0]));
+        setSelected_game(game[0])
        
     }
     const delete_sport=async (key)=>{
@@ -388,12 +621,15 @@ const Sports=()=>{
            home_score:h_score
        }
 
+
+       console.log("the new object is ",obj)
        setAlerte("Please wait...");
        e.target.disabled=true;
 
-       await db.collection("psg_games").doc(key).set(obj,{merge:true});
+       await db.collection("psg_games").doc(key).update(obj,{merge:true});
        setAlerte("");
        e.target.disabled=false;
+       update_stats();
     }
 
     const load_new_games=async (e)=>{
