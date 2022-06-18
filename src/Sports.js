@@ -17,6 +17,7 @@ import { calculate_pick_win, get_winners } from './functions';
 import Modal from "./components/Modal";
 import CreateGame from "./components/CreateGame";
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import Debug from './Debug';
 
 //const API_KEY="008f86d3083f1d90c3a06ec1fe38032a"; foganbidi2@gmail.com
 //const API_KEY="23c219dd52bfbe431d8f7320d8e53c00"; // sicitg2021@gmail.com
@@ -434,6 +435,7 @@ const Sports=()=>{
     }
 
     const calculate_stats=async (id_challenge,alluserspicks)=>{
+       
         const res=await db.collection("psg_challenges").doc(id_challenge).get();
         const {type,mode,entry} = res.data();
         
@@ -482,6 +484,8 @@ const Sports=()=>{
 
             return;
         }
+
+        
         
         const stats=[];
         alluserspicks.map(async (item,i)=>{
@@ -508,15 +512,16 @@ const Sports=()=>{
             .update({results:user_results},{merge:true}) 
         })
         //console.log("the data whole stats is ",stats);
-        const final_res=get_winners(mode,stats,id_challenge);
-        
+
+        const final_res=await get_winners(mode,stats,id_challenge);
+        console.log("challenge res",final_res)
 
         //update the challenge and close it 
         await db.collection("psg_challenges")
         .doc(id_challenge)
         .update({...final_res,closed:true},{merge:true})
         console.log("the data, updated")
-
+        console.log("challenge==",id_challenge,mode,stats)
         //delete invites
         const snap_invite=await db.collection("psg_invites")
         .where("id_challenge","==",id_challenge)
@@ -757,6 +762,7 @@ const Sports=()=>{
         }
         
         //console.log("the doc",entry,id_challenge,all_winners.length,stats.length,winning_coins,coins_to_user);
+        
         return res;
     }
 
@@ -1368,6 +1374,8 @@ const Sports=()=>{
 
 
             {open_create==true && <Modal open_modal={true} content={<CreateGame />} />}
+
+            <Debug />
 
         </div>
     );
