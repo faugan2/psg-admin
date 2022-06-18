@@ -456,10 +456,18 @@ const Sports=()=>{
             //give coins back to user 
             const snap2=await db.collection("psg_users_coins")
             .where("id_challenge","==",id_challenge)
+            .where("cancelled","!=",true)
             .get();
             snap2.docs.map(async (doc)=>{
-                
-                await db.collection("psg_users_coins").doc(doc.id).delete();
+                const line_back={
+                    date:firebase.firestore.FieldValue.serverTimestamp(),
+                    entry:Math.abs(parseFloat(doc.data().entry)),
+                    id_challenge,
+                    picks:[],
+                    user:doc.data().user,
+                    cancelled:true,
+                }
+                await db.collection("psg_users_coins").add(line_back);
                 console.log("the data coins back to user")
             })
 
