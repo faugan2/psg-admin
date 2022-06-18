@@ -463,6 +463,15 @@ const Sports=()=>{
                 console.log("the data coins back to user")
             })
 
+            const snap_invite2=await db.collection("psg_invites")
+            .where("id_challenge","==",id_challenge)
+            .get();
+            
+            snap_invite2.docs.map(async (doc)=>{
+                
+                await db.collection("psg_invites").doc(doc.id).update({done:true},{merge:true});
+            })
+
             return;
         }
         
@@ -486,12 +495,12 @@ const Sports=()=>{
             })
 
             stats.push({id_pick,user,user_results});
-            console.log("the data",user,user_results,id_pick); 
+            //console.log("the data",user,user_results,id_pick); 
             await db.collection("psg_picks").doc(id_pick)
             .update({results:user_results},{merge:true}) 
         })
         //console.log("the data whole stats is ",stats);
-        const final_res=get_winners(mode,stats);
+        const final_res=get_winners(mode,stats,id_challenge);
         
 
         //update the challenge and close it 
@@ -499,6 +508,15 @@ const Sports=()=>{
         .doc(id_challenge)
         .update({...final_res,closed:true},{merge:true})
         console.log("the data, updated")
+
+        //delete invites
+        const snap_invite=await db.collection("psg_invites")
+        .where("id_challenge","==",id_challenge)
+        .get();
+        
+        snap_invite.docs.map(async (doc)=>{
+            await db.collection("psg_invites").doc(doc.id).update({done:true},{merge:true});
+        })
 
        // console.log("the data users=",users);
 
@@ -621,7 +639,7 @@ const Sports=()=>{
                 loses_ou
             }
             await db.collection("psg_users_stats").doc(email).set(stats)
-            console.log("the data",stats)
+            
 
             
 
@@ -630,14 +648,16 @@ const Sports=()=>{
         
     }
 
-    const get_winners=(mode,stats)=>{
-        
+    const get_winners=async (mode,stats,id_challenge)=>{
+        //console.log("the data",mode)
+        let res={};
         if(mode==1){
             //most wins; 
             let max_winnings=0; 
             const results=[];
             stats.map((item,i)=>{
                 const {id_pick,user,user_results}=item;
+               // console.log("the data======",user,id_challenge);
                 const wins=user_results.filter((item2,i2)=>{
                     return item2==1;
                 }).length;
@@ -661,12 +681,88 @@ const Sports=()=>{
                 return item.wins==max_winnings;
             })
             
-            return {results,max_winnings,winners};
+            //console.log("the data results",results)
+            res= {results,max_winnings,winners};
            
+        }else if(mode==2){
+            let max_winnings=0; 
+            const results=[];
+            stats.map((item,i)=>{
+                const {id_pick,user,user_results}=item;
+                let streak=0;
+                user_results.map((item2,i2)=>{
+                    if(item2==1){
+                        streak++;
+                    }else if(item2==2){
+                        streak=0;
+                    }
+                })
+
+                if(streak>max_winnings){
+                    max_winnings=streak;
+                }
+                
+                const wins=user_results.filter((item2,i2)=>{
+                    return item2==1;
+                }).length;
+
+               
+
+                const loses=user_results.filter((item2,i2)=>{
+                    return item2==2;
+                }).length;
+
+                const ties=user_results.filter((item2,i2)=>{
+                    return item2==3;
+                }).length;
+
+                results.push({id_pick,user,user_results,wins,loses,ties,streak})
+                
+            })
+            
+            const winners=results.filter((item,i)=>{
+                return item.streak==max_winnings;
+            })
+            
+            //console.log("the data results",results)
+            res ={results,max_winnings,winners};
         }
-        if(mode==2){
-            //longest winning streak 
-            return [];
+
+        const doc=await db.collection("psg_challenges").doc(id_challenge).get();
+        const {entry}=doc.data();
+        const all_winners=res.winners;
+        const winning_coins=parseInt(entry)*stats.length;
+        const coins_to_user=winning_coins/all_winners.length;
+
+        for(var i=0; i<all_winners.length; i++){
+            const a_winner=all_winners[i];
+            const email_winner=a_winner.user;
+            const line={
+                entry:coins_to_user,
+                id_challenge,
+                picks:[],
+                user:email_winner,
+                date:firebase.firestore.FieldValue.serverTimestamp()
+            }
+            await reward_user(line);
+            
+        }
+        
+        //console.log("the doc",entry,id_challenge,all_winners.length,stats.length,winning_coins,coins_to_user);
+        return res;
+    }
+
+    const reward_user=async (line)=>{
+        const {id_challenge,user}=line;
+        const snap=await db.collection("psg_users_coins")
+        .where("id_challenge","==",id_challenge)
+        .where("user","==",user)
+        .get();
+        if(snap.docs.length==0){
+            await db.collection("psg_users_coins").add(line);
+            console.log("the doc!!!! line added for ",user,id_challenge,line.entry,"coins");
+        }else{
+            console.log("the doc !!!already added",user,id_challenge,line.entry,"coins")
         }
     }
 
