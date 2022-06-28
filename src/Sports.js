@@ -534,6 +534,7 @@ const Sports=()=>{
        // console.log("the data users=",users);
 
         users.map(async (user,i)=>{
+           
             const email=user.email;
             
             const snap=await db.collection("psg_picks")
@@ -576,13 +577,19 @@ const Sports=()=>{
                 loses_ou
             }
 
+            const game_ids=[];
             all_picks.map((item,i)=>{
             const picks=item.picks;
             const results=item.results;
             for(var j=0; j<picks.length; j++){
                 const type=picks[j].type;
                 const result=results[j];
-
+                const game_key=picks[j].key+"-"+type;
+                
+                if(game_ids.indexOf(game_key)>=0){
+                    continue;
+                }
+                game_ids.push(game_key);
                 if(type==1 || type==2){
                 res_ml_spread.push(result);
                 }else{
@@ -637,9 +644,23 @@ const Sports=()=>{
 
             wins_ou=res_over_under?.filter((item,i)=>item==1).length
             loses_ou=res_over_under?.filter((item,i)=>item==2).length
+            const total_picks=all_picks.filter((item,i)=>{
+                return item.user==email;
+            }).length
 
-            
-
+            let status="player";
+            //[player,capper,sharp,legend,PS.Guru]
+            if(per<0.250){
+                status="player"
+            }else if(per<=0.450){
+                status="capper";
+            }else if(per<=0.550){
+                status="sharp";
+            }else if(per<=0.600){
+                status="legend"
+            }else{
+                status="ps.guru"
+            }
 
              stats={
                 wins,
@@ -649,9 +670,12 @@ const Sports=()=>{
                 last_10,
                 last_200,
                 wins_ou,
-                loses_ou
+                loses_ou,
+                status,
+                total_picks
             }
             await db.collection("psg_users_stats").doc(email).set(stats)
+            await db.collection("psg_users").doc(user.key).update({status:status},{merge:true});
             
 
             
