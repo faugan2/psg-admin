@@ -11,6 +11,7 @@ export const counterSlice = createSlice({
     selectedGame:null,
     selectedGames:[],
     challenges:[],
+    allPicks:null,
 	coins:[]
     
   },
@@ -45,6 +46,9 @@ export const counterSlice = createSlice({
 	setCoins:(state,action)=>{
 		state.coins=action.payload;
 	},
+  setAllPicks:(state,action)=>{
+    state.allPicks=action.payload;
+  }
   },
  
 });
@@ -58,6 +62,7 @@ export const {
     setSelectedGame,
     setSelectedGames,
     setChallenges,
+    setAllPicks,
 	setCoins
   } = counterSlice.actions;
 
@@ -71,5 +76,6 @@ export const selectSelectedGame=(state)=>state.counter.selectedGame;
 export const selectSelectedGames=(state)=>state.counter.selectedGames;
 export const selectChallenges=(state)=>state.counter.challenges;
 export const selectCoins=(state)=>state.counter.coins;
+export const selectAllPicks=(state)=>state.counter.allPicks;
 
 export default counterSlice.reducer;

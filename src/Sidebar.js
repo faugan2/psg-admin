@@ -8,7 +8,7 @@ import { setPage } from './features/counterSlice';
 import { useEffect, useState } from 'react';
 import {db} from "./firebase_file";
 import firebase from "firebase";
-
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Spring from "./components/Spring";
 
 const Sidebar=()=>{
@@ -69,7 +69,12 @@ const Sidebar=()=>{
 
             <button onClick={go_to_content.bind(this,2)}>
                 <ClosedCaptionIcon />
-                Challenges
+                PS.Guru Challenges
+            </button>
+
+            <button onClick={go_to_content.bind(this,3)}>
+                <AccountTreeIcon />
+                Users Challenges
             </button>
 
             

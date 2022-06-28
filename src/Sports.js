@@ -417,6 +417,7 @@ const Sports=()=>{
                 return unfinished_games.includes(x);
             })
 
+            console.log("the data diff is ",diff);
             if(diff.length==0){
                 // we can calculate stat for the challenge
                 //picks,id_challenge;
@@ -436,8 +437,9 @@ const Sports=()=>{
 
     const calculate_stats=async (id_challenge,alluserspicks)=>{
        
+        
         const res=await db.collection("psg_challenges").doc(id_challenge).get();
-        const {type,mode,entry} = res.data();
+        const {type,mode,entry} = await res.data();
         
         if(alluserspicks.length==1){
             //cancel this challenge
@@ -485,7 +487,7 @@ const Sports=()=>{
             return;
         }
 
-        
+       
         
         const stats=[];
         alluserspicks.map(async (item,i)=>{
@@ -512,9 +514,11 @@ const Sports=()=>{
             .update({results:user_results},{merge:true}) 
         })
         //console.log("the data whole stats is ",stats);
-
+        
         const final_res=await get_winners(mode,stats,id_challenge);
-        console.log("challenge res",final_res)
+        console.log("the data challenge res")
+       // console.log("the data key=",id_challenge,type,mode,entry);
+        
 
         //update the challenge and close it 
         await db.collection("psg_challenges")
@@ -687,6 +691,7 @@ const Sports=()=>{
 
     const get_winners=async (mode,stats,id_challenge)=>{
         //console.log("the data",mode)
+        
         let res={};
         if(mode==1){
             //most wins; 
@@ -765,11 +770,15 @@ const Sports=()=>{
             res ={results,max_winnings,winners};
         }
 
+       
+
         const doc=await db.collection("psg_challenges").doc(id_challenge).get();
-        const {entry}=doc.data();
+        const {entry}=await doc.data();
         const all_winners=res.winners;
         const winning_coins=parseInt(entry)*stats.length;
         const coins_to_user=winning_coins/all_winners.length;
+
+        
 
         for(var i=0; i<all_winners.length; i++){
             const a_winner=all_winners[i];
@@ -781,6 +790,7 @@ const Sports=()=>{
                 user:email_winner,
                 date:firebase.firestore.FieldValue.serverTimestamp()
             }
+            
             await reward_user(line);
             
         }
@@ -791,16 +801,22 @@ const Sports=()=>{
     }
 
     const reward_user=async (line)=>{
-        const {id_challenge,user}=line;
+        
+        const {id_challenge,user,entry}=line;
+       
         const snap=await db.collection("psg_users_coins")
         .where("id_challenge","==",id_challenge)
         .where("user","==",user)
+        .where("entry","!=","-"+entry)
         .get();
+        
+        
+       
         if(snap.docs.length==0){
             await db.collection("psg_users_coins").add(line);
-            console.log("the doc!!!! line added for ",user,id_challenge,line.entry,"coins");
+            console.log("the data !!!! line added for ",user,id_challenge,line.entry,"coins");
         }else{
-            console.log("the doc !!!already added",user,id_challenge,line.entry,"coins")
+            //console.log("the data !!!already added",user,id_challenge,line.entry,"coins")
         }
     }
 

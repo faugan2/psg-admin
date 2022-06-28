@@ -1,6 +1,7 @@
 import Players from "./Players";
 import Sports from "./Sports";
 import Challenge from "./Challenge";
+import ChallengeUsers from "./ChallengeUsers";
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,7 +38,8 @@ const Main=()=>{
             {
                 page==0 ? <Players /> : 
                 page==1 ? <Sports /> :
-                page==2 ?  <Challenge /> : <div className="loading">Loading...</div>
+                page==2 ?  <Challenge /> :
+                page==3 ?  <ChallengeUsers /> : <div className="loading">Loading...</div>
             }
         
         </div>

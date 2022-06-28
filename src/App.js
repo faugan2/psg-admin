@@ -7,7 +7,7 @@ import {db,auth} from "./firebase_file";
 import Login from "./Login";
 import Content from "./Content";
 import Debug from "./Debug";
-import { selectSports, setLeagues, setSports, setUsers,setCoins } from './features/counterSlice';
+import { selectSports, setLeagues, setSports, setUsers,setCoins, setAllPicks } from './features/counterSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 function App() {
@@ -95,6 +95,19 @@ function App() {
       dispatch(setCoins(data))
     })
   },[])
+
+  const load_picks=async ()=>{
+    db.collection("psg_picks").onSnapshot((snap)=>{
+      const data=[];
+      snap.docs.map((doc)=>{
+        const key=doc.id;
+        const d=doc.data()
+        d.key=key;
+        data.push(d);
+      })
+      dispatch(setAllPicks(data))
+    })
+  }
   useEffect(()=>{
     auth.onAuthStateChanged((user)=>{
       if(user==null){
@@ -104,6 +117,7 @@ function App() {
         //app
        // setApp(2);
         load_sports();
+        load_picks();
         
       }
     })

@@ -9,8 +9,9 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import PlayerInfo from "./PlayerInfo";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, selectUsers, setUser,selectCoins } from './features/counterSlice';
-
-
+import moment from 'moment';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
+import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 const stc = require('string-to-color');
 
 const Players=()=>{
@@ -22,7 +23,12 @@ const Players=()=>{
     const [current_user,setCurrent_user]=useState(useSelector(selectUser));
     const [password,setPassword]=useState("");
     const [index,setIndex]=useState(0);
+    const [users_coins,set_users_coins]=useState(null);
+    const [users_stats,set_users_stats]=useState(null);
+    const [user_coins,set_user_coins]=useState(null);
+
     const dispatch=useDispatch();
+
 
     const load_users=async ()=>{
         const users=await db.collection("psg_users").get();
@@ -38,6 +44,33 @@ const Players=()=>{
 
     }
 
+    const load_users_coins=()=>{
+        db.collection("psg_users_coins")
+        .get().then((snap)=>{
+            const data=[];
+            snap.docs.map((doc)=>{
+                const key=doc.id;
+                const d=doc.data()
+                d.key=key;
+                data.push(d);
+            })
+            set_users_coins(data);
+        })
+    }
+
+    const load_users_stats=()=>{
+        db.collection("psg_users_stats").get().then((snap)=>{
+            const data=[];
+            snap.docs.map((doc)=>{
+                const key=doc.id;
+                const d=doc.data()
+                d.key=key;
+                data.push(d);
+            })
+            set_users_stats(data);
+        })
+    }
+
     
 
 
@@ -45,18 +78,22 @@ const Players=()=>{
 	const c=useSelector(selectCoins);
 	const [display,set_display]=useState(false);
     useEffect(()=>{
+        load_users_coins();
+        load_users_stats();
+    },[])
+    useEffect(()=>{
         setPlayers(u);
 		
-    },[u]);
+    },[u,users_coins,users_stats]);
 	
-	 useEffect(()=>{
+	 /*useEffect(()=>{
 		set_coins(c);
 		c.map((item)=>{
 			const email=item.user;
 			const coins=item.coins;
 			
 		});
-    },[c]);
+    },[c]);*/
     const td_coins=document.querySelectorAll(".coins");
     useEffect(()=>{
         if(coins.length==0){
@@ -214,6 +251,22 @@ const Players=()=>{
             btn.classList.remove("active");
         })
     }
+
+    const [selected_player,set_selected_player]=useState(null);
+
+    const show_user_coins_history=(user)=>{
+        const email=user.email;
+        const user_coins=users_coins?.filter((item)=>{
+            return item.user==email;
+        })
+        set_user_coins(user_coins);
+        const modal=document.querySelector("#modal_user_coins");
+        modal.style.display="block";
+        const res=players?.filter((item)=>{
+            return item.email==email;
+        })
+        set_selected_player(res[0])
+    }
     return(
         <div className="players">
             <div className="players__search_zone">
@@ -228,7 +281,11 @@ const Players=()=>{
                         <th>Date</th>
                         <th>Photo</th>
                         <th>Username</th>
+                        <th>Status</th>
                         <th>Email</th>
+                        <th>OverAll %</th>
+                        <th>Streak</th>
+                        <th>Matches</th>
                         <th>Coins</th>
                         <th>Wins</th>
                         <th>Loses</th>
@@ -243,7 +300,24 @@ const Players=()=>{
                     {
                         players.map((user)=>{
 							
-							
+                            let uc=users_coins?.filter((line)=>{
+                                return line.user==user.email;
+                            })
+                            let total_coins=0;
+                            if(uc!=undefined){
+                                uc?.map((line)=>{
+                                    const entry=parseFloat(line.entry);
+                                    total_coins+=entry;
+                                })
+                            }
+
+                            let us=users_stats?.filter((line)=>{
+                                return line.key==user.email;
+                            })
+                            let stats=null;
+                            if(us!=undefined){
+                                stats=us[0];
+                            }
                         
                             return(
                                 <tr key={user.id}>
@@ -264,19 +338,29 @@ const Players=()=>{
                             
                         </td>
                         <td>@{user.username}</td>
+                        <td>{stats?.status}</td>
                         <td>{user.email}</td>
-                        <td className="coins" data-user={user.email} style={{
+                        <td>{stats?.over_all}</td>
+                        <td>{stats?.streak}</td>
+                        
+                        <td>{stats?.total_picks}</td>
+                        <td className="coins" 
+                        data-user={user.email} style={{
                             color:"gold"
-                        }}>{user.coins}</td>
-                        <td>{user.wins}</td>
-                        <td>{user.loses}</td>
-                        <td>0-0</td>
-                        <td>0-0</td>
-                        <td>0-0</td>
+                        }}
+                        onClick={show_user_coins_history.bind(this,user)}
+                        >
+                            {total_coins}
+                        </td>
+                        <td>{stats?.wins}</td>
+                        <td>{stats?.loses}</td>
+                        <td>{stats?.wins_ou}-{stats?.loses_ou}</td>
+                        <td>{stats?.last_10}</td>
+                        <td>{stats?.last_200}</td>
                         <td className="actions">
-                            <button title="User profile" onClick={user_profile.bind(this,user)}>
+                            {/*<button title="User profile" onClick={user_profile.bind(this,user)}>
                                 <PersonIcon style={{fontSize:"1.2rem"}} />
-                            </button>
+                            </button>*/}
                             <button title="Reset password" onClick={reset_user_password.bind(this,user)}>
                                 <CachedIcon  style={{fontSize:"1.2rem"}}/>
                             </button>
@@ -293,6 +377,81 @@ const Players=()=>{
                 </tbody>
             </table>
 
+            <div className="modal" id="modal_user_coins">
+                <div className="modal-content">
+
+                    <h2>@{selected_player?.username} coins History</h2>
+                        {user_coins!=null &&
+                        <div style={{minHeight:300,maxHeight:300,overflow:"auto"}}>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Coins</th>
+                                    <th>-</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                user_coins?.map((line)=>{
+                                    const dt=moment(line.date?.seconds*1000).format("ll")
+                                    const e=parseFloat(line.entry);
+                                    const id_ch=line.id_challenge;
+                                    let name="";
+                                    if(id_ch==0){
+                                        name="Joining Bonus Coins"
+                                    }else if(id_ch==1){
+                                        name="Daily Bonus Coin"
+                                    }else{
+                                        if(e<=0){
+                                            name="Challenge Entry fee"
+                                        }else{
+                                            name="Challenge Winning Coins"
+                                        }   
+                                       
+                                    }
+                                    return <tr key={line.key} style={{color:"black"}}>
+                                            <td>{dt}</td> 
+                                            <td>{name}</td>
+                                            <td>{Math.abs(parseFloat(line.entry))}</td>
+                                            <td>
+                                                {e<0 &&<TrendingUpIcon style={{color:"red"}}/>}
+                                                {e>0 &&<TrendingDownIcon />}
+                                            </td>
+                                        </tr>
+                                })
+                            }
+                            </tbody>
+                        </table>
+                        </div>
+                        }
+                    <div 
+                    style={{
+                        
+                        display:"flex",
+                        alignItems:"center",
+                        justifyContent:"flex-end",
+                    }}
+                    >
+                        <button
+                        style={{
+                            padding:8,
+                            width:60,
+                            backgroundColor:"indianred",
+                            color:"white",
+                            border:"none",
+                            cursor:"pointer"
+                        }}
+                        onClick={()=>{
+                            document.querySelector("#modal_user_coins").style.display="none";
+                        }}>
+                            close
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
 
             <div className="modal" id="modal_confirm">
                 <div className="modal-content">
